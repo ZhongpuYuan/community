@@ -1,5 +1,6 @@
 package life.majiang.community.controller;
 
+import com.sun.deploy.net.HttpResponse;
 import life.majiang.community.dto.AccessTokenDTO;
 import life.majiang.community.dto.GitHubUser;
 import life.majiang.community.mapper.UserMapper;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 /**
@@ -43,7 +46,7 @@ public class AuthorizeController {
     @GetMapping("/callback")
     public String callback(@RequestParam(name="code") String code,
                            @RequestParam(name = "state") String state,
-                            HttpServletRequest request){
+                            HttpServletResponse response) {
 
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();// shift + 回车
         accessTokenDTO.setClient_id(clientId);
@@ -54,18 +57,29 @@ public class AuthorizeController {
         String accessToken = gitHubProvider.getAccessToken(accessTokenDTO);// command + alt + v
         GitHubUser gitHubUser = gitHubProvider.getUser(accessToken);
         System.out.println(gitHubUser.getName());
-        // shift + f6
+        /**
+         * 1.当成功登陆后
+         * 2.获取用户信息，生成token
+         * 3.把token放到user中，存入数据库
+         * 4.把token放入cookie(无需将user放入session，这是实现持久化登陆的又一个方法)
+         */
+        // shift + f6：改变局部变量名称
         if (gitHubUser!=null){
             // 将用户存入数据库
             User user = new User();
-            user.setToken(UUID.randomUUID().toString());// 使用UUID
+            String token = UUID.randomUUID().toString();// command + alt + v
+            user.setToken(token);// 使用UUID
             user.setName(gitHubUser.getName());
             user.setAccountId(String.valueOf(gitHubUser.getId()));
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
             userMapper.insert(user);
+
+            // 插入成功，添加cookie，
+            response.addCookie(new Cookie("token",token));// command + p：查看参数类型
+
             // 用户登录成功，刷新页面也会保持登录状态
-            request.getSession().setAttribute("user",gitHubUser);// 将user对象放入session中
+            // request.getSession().setAttribute("user",gitHubUser);// 将user对象放入session中
             return "redirect:index";// 重定向
         }else {
             // 重新登录
