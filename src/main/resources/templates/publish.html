@@ -6,14 +6,16 @@
     <title>发布</title>
 
     <!-- 引入bootstrap -->
-    <link rel="stylesheet" href="css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-
-    <script src="js/jquery-3.4.1.min.js"></script>
-    <script src="js/bootstrap.min.js" type="application/javascript"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <!-- 注意，当请求地址为：http://localhost:8888/publish/17
+         如果不加/，我们是在当前/17路径请求静态资源，这显然是错误地
+     -->
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js" type="application/javascript"></script>
 
     <!-- 引入自定义的css文件 -->
-    <link rel="stylesheet" href="css/community.css">
+    <link rel="stylesheet" href="/css/community.css">
 
 </head>
 
@@ -35,6 +37,9 @@
             <!-- 问题标题 -->
             <!-- get方式：渲染页面，post方式，执行请求 -->
             <form action="/publish" method="post">
+                <!-- hidden：提交表单时传递，但是不在页面显示 -->
+                <input type="hidden" name="id" th:value="${id}">
+
                 <div class="form-group">
                     <label for="title">问题标题(简单扼要):</label>
                     <input type="text" class="form-control" th:value="${title}" id="title" name="title"

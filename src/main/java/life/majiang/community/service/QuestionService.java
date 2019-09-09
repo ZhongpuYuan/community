@@ -134,4 +134,29 @@ public class QuestionService {
 
         return paginationDTO;
     }
+
+    /**
+     * getById：根据id，去question表查询指定的记录
+     */
+    public QuestionDTO getById(Integer id) {
+        Question question = questionMapper.getById(id);
+
+        QuestionDTO questionDTO = new QuestionDTO();
+        BeanUtils.copyProperties(question,questionDTO);
+
+        User user = userMapper.findById(question.getCreator());// 获取当前关联的user对象
+        questionDTO.setUser(user);
+
+        return questionDTO;
+    }
+
+    public void createOrUpdate(Question question) {
+        if (question.getCreator() == null){
+            questionMapper.create(question);
+        }else {
+            // 更新
+            question.setGmtModified(question.getGmtCreate());
+            questionMapper.update(question);
+        }
+    }
 }

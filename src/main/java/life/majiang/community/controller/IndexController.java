@@ -1,8 +1,6 @@
 package life.majiang.community.controller;
 
 import life.majiang.community.dto.PaginationDTO;
-import life.majiang.community.mapper.UserMapper;
-import life.majiang.community.model.User;
 import life.majiang.community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,42 +8,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
-
 @Controller
 public class IndexController {
-
-    @Autowired
-    private UserMapper userMapper;
 
     @Autowired
     private QuestionService questionService;
 
     @GetMapping("/")
-    public String index(HttpServletRequest request, Model model,
+    public String index(Model model,
                         // 分页数，默认为1，用户可自己输入想要跳转的页数
                         @RequestParam(name="page",defaultValue = "1") Integer page,
                         // 每页显示的条目数
                         @RequestParam(name="size",defaultValue = "3") Integer size){
-        Cookie[] cookies = request.getCookies();
-
-        if(cookies != null && cookies.length != 0){
-            for(Cookie cookie : cookies){
-                // 遍历cookie
-                if(cookie.getName().equals("token")){
-                    String token = cookie.getValue();
-                    // 根据token去数据库查询用户，若不为空，则证明登陆成功
-                    User user = userMapper.findByToken(token);
-                    // 当user不为空，即登陆成功时，将登陆信息写入session，便于页面的展示和跳转
-                    if(user != null){
-                        request.getSession().setAttribute("user",user);
-                    }
-                    break;
-                }
-            }
-        }
 
         // 在页面返回之前，从数据库中执行查询，回显数据
         PaginationDTO pagination = questionService.list(page,size);

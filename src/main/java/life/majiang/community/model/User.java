@@ -15,6 +15,6 @@ public class User {
     private String accountId;
     private Long gmtCreate;
     private Long gmtModified;
-    private String token;
+    private String token;// 相当于银行卡。session相当于银行账户
     private String avatarUrl;// 头像地址
 }

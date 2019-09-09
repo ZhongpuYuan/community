@@ -1,10 +1,7 @@
 package life.majiang.community.mapper;
 
 import life.majiang.community.model.User;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 // command + o：自动移除无用导包
@@ -26,4 +23,17 @@ public interface UserMapper {
 
     @Select("select * from user where id = #{id}")
     User findById(@Param("id") Integer id);
+
+    /**
+     * 异常：Parameter 'account_id' not found. Available parameters are [accountId, param1]
+     * 原因：@Select("select * from user where account_id = #{account_id}")
+     *
+     * 正确：@Select("select * from user where account_id = #{accountId}")
+     */
+    @Select("select * from user where account_id = #{accountId}")
+    User findByAccountId(@Param("accountId") String accountId);
+
+    // gmt_modified：映射数据库的column，没有驼峰。
+    @Update({"update user set name=#{name},token=#{token},gmt_modified=#{gmtModified},avatar_url=#{avatarUrl} where id=#{id}"})
+    void update(User user);// 当参数是类对象时，不需要@Param注解
 }

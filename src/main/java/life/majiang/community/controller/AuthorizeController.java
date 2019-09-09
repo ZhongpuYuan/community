@@ -2,8 +2,8 @@ package life.majiang.community.controller;
 
 import life.majiang.community.dto.AccessTokenDTO;
 import life.majiang.community.dto.GitHubUser;
-import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.User;
+import life.majiang.community.service.UserService;
 import life.majiang.community.utils.GitHubProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class AuthorizeController {
     private GitHubProvider gitHubProvider;
 
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
 
     // 获取配置文件信息
     @Value("${github.client.id}")
@@ -70,22 +71,34 @@ public class AuthorizeController {
             user.setToken(token);// 使用UUID
             user.setName(gitHubUser.getName());
             user.setAccountId(String.valueOf(gitHubUser.getId()));
-            user.setGmtCreate(System.currentTimeMillis());
-            user.setGmtModified(user.getGmtCreate());
 
             user.setAvatarUrl(gitHubUser.getAvatarUrl());
 
-            userMapper.insert(user);
+            userService.createOrUpdate(user);
+
+            // userMapper.insert(user);
 
             // 插入成功，添加cookie，
             response.addCookie(new Cookie("token", token));// command + p：查看参数类型
 
             // 用户登录成功，刷新页面也会保持登录状态
             // request.getSession().setAttribute("user",gitHubUser);// 将user对象放入session中
-            return "redirect:index";// 重定向
+            return "redirect:/";// 重定向
         } else {
             // 重新登录
-            return "redirect:index";// 重定向￿￿
+            return "redirect:/";// 重定向￿￿
         }
+    }
+
+    // 编写退出登录的方法：清除cookie(token)和session
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request,HttpServletResponse response){
+        request.getSession().removeAttribute("user");
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+
+        response.addCookie(cookie);
+
+        return "redirect:/";
     }
 }

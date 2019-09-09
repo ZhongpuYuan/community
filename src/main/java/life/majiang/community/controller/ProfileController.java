@@ -1,7 +1,6 @@
 package life.majiang.community.controller;
 
 import life.majiang.community.dto.PaginationDTO;
-import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.User;
 import life.majiang.community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class ProfileController {
-
-    @Autowired
-    private UserMapper userMapper;
 
     @Autowired
     private QuestionService questionService;
@@ -31,28 +26,10 @@ public class ProfileController {
 
         /**
          * 登录验证：防止用户直接在地址栏访问profile.html
+         *          判断用户是否登录，若无，则跳转到登录页
          */
-        User user = null;
+        User user = (User) request.getSession().getAttribute("user");
 
-        Cookie[] cookies = request.getCookies();
-
-        if(cookies != null && cookies.length != 0){
-            for(Cookie cookie : cookies){
-                // 遍历cookie
-                if(cookie.getName().equals("token")){
-                    String token = cookie.getValue();
-                    // 根据token去数据库查询用户，若不为空，则证明登陆成功
-                    user = userMapper.findByToken(token);
-                    // 当user不为空，即登陆成功时，将登陆信息写入session，便于页面的展示和跳转
-                    if(user != null){
-                        request.getSession().setAttribute("user",user);
-                    }
-                    break;
-                }
-            }
-        }
-
-        // 判断用户是否登录，若无，则跳转到登录页
         if (user == null){
             return "redirect:/";
         }
