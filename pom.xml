@@ -66,6 +66,7 @@
             <version>3.14.1</version>
         </dependency>
 
+        <!--mysql-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -97,9 +98,27 @@
     <build>
         <plugins>
 
+            <!-- maven插件 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- mybatis逆向工程 -->
+            <!-- mvn -Dmybatis.generator.overwrite=true mybatis-generator:generate -->
+            <plugin>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-maven-plugin</artifactId>
+                <version>1.3.7</version>
+
+                <!-- 逆向工程需要数据库驱动 -->
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>5.1.45</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <!-- 配置flywaydb，团队数据库同步工具，用于执行sql脚本 -->
@@ -112,18 +131,12 @@
                     <user>root</user>
                     <password>yzp960704</password>
                 </configuration>
-                <dependencies>
 
+                <dependencies>
                     <dependency>
                         <groupId>mysql</groupId>
                         <artifactId>mysql-connector-java</artifactId>
                         <version>5.1.45</version>
-                    </dependency>
-
-                    <dependency>
-                        <groupId>com.h2database</groupId>
-                        <artifactId>h2</artifactId>
-                        <version>1.4.199</version>
                     </dependency>
                 </dependencies>
             </plugin>

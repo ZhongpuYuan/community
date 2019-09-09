@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<!--
+    <generatorConfiguration>：
+        the root element of a MyBatis Generator configuration file.
+-->
+<generatorConfiguration>
+
+    <!--
+        The <context> element is used to specify the environment for generating a set of objects.
+        Child elements are used to specify the database to connect to, the type of objects to generate, and the tables to introspect.
+    -->
+    <context id="DB2Tables" targetRuntime="MyBatis3">
+
+        <!-- 官方给定的分页插件 -->
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"></plugin>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/community?useSSL=false"
+                        userId="root"
+                        password="yzp960704">
+        </jdbcConnection>
+
+        <!-- 类型转换，可选可不选 -->
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <!-- define properties of the Java model generator -->
+        <!-- targetPackage：the package where the generated classes will be placed -->
+        <javaModelGenerator targetPackage="life.majiang.community.model" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+            <!-- trimStrings：去除sql语句多余的空格 -->
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="mapper"  targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="life.majiang.community.mapper"  targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+        <!--The <table> element is used to select a table in the database for introspection-->
+        <table tableName="user" domainObjectName="User" ></table>
+        <table tableName="question" domainObjectName="Question" ></table>
+
+    </context>
+</generatorConfiguration>
