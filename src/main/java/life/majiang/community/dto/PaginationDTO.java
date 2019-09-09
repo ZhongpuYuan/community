@@ -22,13 +22,9 @@ public class PaginationDTO {
     private Integer totalPage;
 
     // size：每页显示的记录数，固定值2
-    public void setPagination(Integer totalCount, Integer page, Integer size) {
+    public void setPagination(Integer totalPage, Integer page) {
 
-        if (totalCount % size == 0){
-            totalPage = totalCount / size;
-        }else {
-            totalPage = totalCount / size + 1;
-        }
+        this.totalPage = totalPage;
 
         this.page = page;// 获取当前页，便于在页面上进行高亮显示
 

@@ -16,6 +16,7 @@ import java.util.List;
  */
 @Mapper
 @Repository
+// 注意：不允许出现同名方法
 public interface QuestionMapper {
     @Insert("insert into question(title,description,gmt_create,gmt_modified,creator,tag) values(#{title},#{description},#{gmtCreate},#{gmtModified},#{creator},#{tag})")
     void create(Question question);
@@ -28,11 +29,11 @@ public interface QuestionMapper {
     @Select("select count(1) from question")
     Integer count();
 
-    // 注意：不允许出现同名方法
+    // listByUserId()：根据userId，分页查询查询指定用户提出的问题和回复
     @Select("select * from question where creator=#{userId} limit #{offset},#{size}")
     List<Question> listByUserId(@Param("userId") Integer userId, @Param(value = "offset") Integer offset, @Param(value = "size")Integer size);
 
-    // 查询总记录数
+    // countByUserId()：查询指定用户提出的问题总数
     @Select("select count(1) from question where creator=#{userId}")
     Integer countByUserId(@Param("userId") Integer userId);
 }
