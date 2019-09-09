@@ -42,9 +42,9 @@ public class AuthorizeController {
     private String redirectUri;
 
     @GetMapping("/callback")
-    public String callback(@RequestParam(name="code") String code,
+    public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
-                            HttpServletResponse response) {
+                           HttpServletResponse response) {
 
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();// shift + 回车
         accessTokenDTO.setClient_id(clientId);
@@ -54,7 +54,7 @@ public class AuthorizeController {
         accessTokenDTO.setClient_secret(clientSecret);
         String accessToken = gitHubProvider.getAccessToken(accessTokenDTO);// command + alt + v
         GitHubUser gitHubUser = gitHubProvider.getUser(accessToken);
-        System.out.println(gitHubUser.getName());
+
         /**
          * 1.当成功登陆后
          * 2.获取用户信息，生成token
@@ -62,24 +62,28 @@ public class AuthorizeController {
          * 4.把token放入cookie(无需将user放入session，这是实现持久化登陆的又一个方法)
          */
         // shift + f6：改变局部变量名称
-        if (gitHubUser!=null){
+        if (gitHubUser != null && gitHubUser.getId() != null) {
             // 将用户存入数据库
             User user = new User();
+
             String token = UUID.randomUUID().toString();// command + alt + v
             user.setToken(token);// 使用UUID
             user.setName(gitHubUser.getName());
             user.setAccountId(String.valueOf(gitHubUser.getId()));
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
+
+            user.setAvatarUrl(gitHubUser.getAvatarUrl());
+
             userMapper.insert(user);
 
             // 插入成功，添加cookie，
-            response.addCookie(new Cookie("token",token));// command + p：查看参数类型
+            response.addCookie(new Cookie("token", token));// command + p：查看参数类型
 
             // 用户登录成功，刷新页面也会保持登录状态
             // request.getSession().setAttribute("user",gitHubUser);// 将user对象放入session中
             return "redirect:index";// 重定向
-        }else {
+        } else {
             // 重新登录
             return "redirect:index";// 重定向￿￿
         }

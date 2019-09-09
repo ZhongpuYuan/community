@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!-- 引入thymeleaf -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+    <title>发布</title>
+
+    <!-- 引入bootstrap -->
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.min.js" type="application/javascript"></script>
+
+    <!-- 引入自定义的css文件 -->
+    <link rel="stylesheet" href="css/community.css">
+
+</head>
+
+<body>
+
+<!-- 导入公共页面navigation.html -->
+<div th:insert="~{navigation :: nav}"></div>
+
+<!-- bootstrap流式布局 -->
+<!-- main是我们自定义的css样式文件 -->
+<div class="container-fluid main">
+    <div class="row">
+        <!-- col-lg-9 + table：自动生成div元素 -->
+        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+            <!-- 引入bootstrap标签 -->
+            <h2><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>发起</h2>
+            <hr/>
+
+            <!-- 问题标题 -->
+            <!-- get方式：渲染页面，post方式，执行请求 -->
+            <form action="/publish" method="post">
+                <div class="form-group">
+                    <label for="title">问题标题(简单扼要):</label>
+                    <input type="text" class="form-control" th:value="${title}" id="title" name="title"
+                           placeholder="问题标题....">
+                </div>
+
+                <!-- 问题补充 -->
+                <div class="form-group">
+                    <label for="description">问题补充(必填，请参照右侧提示):</label>
+                    <textarea name="description" id="description" th:text="${description}" class="form-control"
+                              cols="30" rows="10"></textarea>
+                </div>
+
+                <!-- 添加标签 -->
+                <div class="form-group">
+                    <label for="tag">添加标签</label>
+                    <input type="text" class="form-control" th:value="${tag}" id="tag" name="tag"
+                           placeholder="输入标签，以逗号隔开">
+                </div>
+
+                <div class="container-fluid main">
+                    <div class="row">
+                        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+                            <div class="alert alert-danger col-lg-12 col-md-12 col-sm-12 col-xs-12"
+                                 th:text="${error}"
+                                 th:if="${error !=null}">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+                            <!-- 成功按钮：type必须是submit，才会将表格内容提交到controller -->
+                            <button type="submit" class="btn btn-success btn-publish">发布</button>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 网页右侧的问题发布指南 -->
+        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+            <!-- 当页面显示不完全时，原因可能是浏览器缩放造成的 -->
+            <h3>问题发起指南</h3>
+            • 问题标题: 请用精简的语言描述您发布的问题，不超过25字 <br>
+            • 问题补充: 详细补充您的问题内容，并确保问题描述清晰直观, 并提供一些相关的资料<br>
+            • 选择标签: 选择一个或者多个合适的标签，用逗号隔开，每个标签不超过10个字<br>
+        </div>
+    </div>
+</div>
+</nav>
+
+</body>
+</html>
